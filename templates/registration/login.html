@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Log in · SkillTrack{% endblock %}
+{% block content %}
+<div class="card narrow">
+  <h2>Log in</h2>
+  {% if form.errors %}<div class="msg error">Username or password is incorrect.</div>{% endif %}
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="hidden" name="next" value="{{ next|default:'' }}">
+    <button class="btn" type="submit">Log in</button>
+  </form>
+  <p class="muted">
+    <a href="{% url 'password_reset' %}">Forgot password?</a> &middot;
+    <a href="{% url 'register' %}">Create an account</a>
+  </p>
+</div>
+{% endblock %}

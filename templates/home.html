@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Home · SkillTrack{% endblock %}
+{% block content %}
+<div class="card hero">
+  <h1 style="margin-top: 0;">SkillTrack</h1>
+  <p>Corporate training platform. HR publishes training modules, managers assign them to their team, and employees enroll and track their own progress.</p>
+  <p class="muted">{{ module_count }} training module{{ module_count|pluralize }} available.</p>
+  {% if user.is_authenticated %}
+    <a class="btn" href="{% url 'dashboard' %}">Go to my dashboard</a>
+    <a class="btn light" href="{% url 'module_list' %}">Browse modules</a>
+  {% else %}
+    <a class="btn" href="{% url 'register' %}">Register</a>
+    <a class="btn light" href="{% url 'login' %}">Log in</a>
+  {% endif %}
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h3 style="margin-top: 0;">Employee</h3>
+    <p class="muted">Browse training modules, enroll, track progress and take assessments. Download certificates.</p>
+  </div>
+  <div class="card">
+    <h3 style="margin-top: 0;">Manager</h3>
+    <p class="muted">See your department's progress and assign modules to employees.</p>
+  </div>
+  <div class="card">
+    <h3 style="margin-top: 0;">HR / Admin</h3>
+    <p class="muted">Add, edit and delete training modules. Manage the whole catalog and team progress.</p>
+  </div>
+</div>
+{% endblock %}

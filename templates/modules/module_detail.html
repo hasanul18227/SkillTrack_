@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{{ module.title }} · SkillTrack{% endblock %}
+{% block content %}
+<p><a href="{% url 'module_list' %}">&larr; Back to available modules</a></p>
+
+<div class="card">
+  <h1 style="margin-top: 0;">{{ module.title }}</h1>
+  <p class="muted">{{ module.category }} &middot; {{ module.get_level_display }} &middot; {{ module.points }} points</p>
+  <p>{{ module.description|linebreaksbr }}</p>
+  <div>{% for tag in module.tag_list %}<span class="badge">{{ tag }}</span>{% endfor %}</div>
+  <p>Average rating:
+    {% if module.average_rating %}<span class="stars">{{ module.average_rating|floatformat:1 }} / 5</span>{% else %}no ratings yet{% endif %}
+  </p>
+  {% if is_hr %}<a class="btn light" href="{% url 'module_update' module.pk %}">Edit module</a>{% endif %}
+</div>
+
+<div class="card">
+  <h2>Your status</h2>
+  {% if enrollment %}
+    <p>Status: <strong>{{ enrollment.get_status_display }}</strong> &middot; Progress: {{ enrollment.progress }}%
+      {% if enrollment.score is not None %}&middot; Score: {{ enrollment.score }}/100{% endif %}
+      {% if enrollment.due_date %}&middot; Due {{ enrollment.due_date|date:"d M Y" }}{% endif %}
+      {% if enrollment.is_overdue %}<span class="tag-overdue">Overdue</span>{% endif %}
+    </p>
+    <a class="btn light" href="{% url 'my_courses' %}">Go to my courses</a>
+  {% else %}
+    <form method="post" action="{% url 'enroll' module.pk %}">
+      {% csrf_token %}
+      <button class="btn" type="submit">Enroll in this module</button>
+    </form>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h2>Ratings and feedback</h2>
+  {% if can_review %}
+    <form method="post" action="{% url 'submit_feedback' module.pk %}">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button class="btn" type="submit">{% if my_feedback %}Update my review{% else %}Submit review{% endif %}</button>
+    </form>
+  {% else %}
+    <p class="muted">Complete this module to rate it and leave a comment.</p>
+  {% endif %}
+
+  <hr>
+  {% for item in feedback_items %}
+    <div class="note">
+      <strong>{{ item.author.get_full_name|default:item.author.username }}</strong>
+      <span class="stars">{{ item.rating }} &#9733;</span>
+      <span class="muted">{{ item.created_at|date:"d M Y" }}</span>
+      {% if item.comment %}<p>{{ item.comment }}</p>{% endif %}
+      {% if is_hr %}
+        <form method="post" action="{% url 'delete_feedback' item.pk %}">
+          {% csrf_token %}
+          <button class="btn danger" type="submit">Remove feedback</button>
+        </form>
+      {% endif %}
+    </div>
+  {% empty %}
+    <p class="muted">No feedback yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}

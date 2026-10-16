@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Manage modules · SkillTrack{% endblock %}
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+  <h1>Manage modules</h1>
+  <a class="btn" href="{% url 'module_create' %}">+ New module</a>
+</div>
+
+<div class="card">
+  <table>
+    <thead>
+      <tr><th>Title</th><th>Category</th><th>Level</th><th>Points</th><th>Skill tags</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for module in modules %}
+        <tr>
+          <td><a href="{% url 'module_detail' module.pk %}">{{ module.title }}</a></td>
+          <td>{{ module.category }}</td>
+          <td>{{ module.get_level_display }}</td>
+          <td>{{ module.points }}</td>
+          <td>{{ module.skill_tags }}</td>
+          <td style="white-space: nowrap;">
+            <a class="btn light" href="{% url 'module_update' module.pk %}">Edit</a>
+            <form method="post" action="{% url 'module_delete' module.pk %}" style="display: inline;"
+                  onsubmit="return confirm('Delete this module? Enrollments and feedback for it will also be removed.');">
+              {% csrf_token %}
+              <button class="btn danger" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="muted">No modules yet. Create the first one.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}HR dashboard · SkillTrack{% endblock %}
+{% block content %}
+<h1>HR / Admin dashboard</h1>
+
+<div class="grid">
+  <div class="card"><div class="muted">Training modules</div><div class="big">{{ total_modules }}</div></div>
+  <div class="card"><div class="muted">Employees</div><div class="big">{{ total_employees }}</div></div>
+  <div class="card"><div class="muted">Enrollments</div><div class="big">{{ total_enrollments }}</div></div>
+  <div class="card"><div class="muted">Completed</div><div class="big">{{ completed }}</div></div>
+  <div class="card"><div class="muted">Overdue</div><div class="big">{{ overdue }}</div></div>
+</div>
+
+<div class="card">
+  <h2 style="margin-top: 0;">Modules by level</h2>
+  {% for item in by_level %}
+    <p><strong>{{ item.label }}</strong>: {{ item.count }}</p>
+  {% endfor %}
+  <p>
+    <a class="btn" href="{% url 'module_create' %}">+ Add training module</a>
+    <a class="btn light" href="{% url 'manage_modules' %}">Module list (edit / delete)</a>
+  </p>
+</div>
+
+<div class="card">
+  <h2 style="margin-top: 0;">Recently added modules</h2>
+  {% for m in recent_modules %}
+    <p><a href="{% url 'module_detail' m.pk %}">{{ m.title }}</a>
+      <span class="muted">({{ m.get_level_display }}, {{ m.category }})</span></p>
+  {% empty %}
+    <p class="muted">No modules yet. Add the first one.</p>
+  {% endfor %}
+</div>
+{% endblock %}

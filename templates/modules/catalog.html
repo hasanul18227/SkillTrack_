@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Available modules · SkillTrack{% endblock %}
+{% block content %}
+<h1>Available training modules</h1>
+
+<form method="get" class="card">
+  <label>Search by title, category or skill
+    <input type="text" name="q" value="{{ q }}">
+  </label>
+  <button class="btn" type="submit">Search</button>
+</form>
+
+<div class="grid">
+  {% for module, status in items %}
+    <div class="card" style="display: flex; flex-direction: column;">
+      <strong>{{ module.title }}</strong>
+      <span class="muted">{{ module.category }} &middot; {{ module.get_level_display }} &middot; {{ module.points }} points</span>
+      <p>{{ module.description|truncatechars:120 }}</p>
+      <div>{% for tag in module.tag_list %}<span class="badge">{{ tag }}</span>{% endfor %}</div>
+      <div style="margin-top: auto; padding-top: 10px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        {% if status == "COMPLETED" %}
+          <span class="muted">Completed</span>
+        {% elif status %}
+          <span class="muted">Enrolled</span>
+        {% else %}
+          <form method="post" action="{% url 'enroll' module.pk %}">
+            {% csrf_token %}
+            <button class="btn" type="submit">Enroll</button>
+          </form>
+        {% endif %}
+        <a href="{% url 'module_detail' module.pk %}">Details</a>
+      </div>
+    </div>
+  {% empty %}
+    <p class="muted">No modules found.</p>
+  {% endfor %}
+</div>
+{% endblock %}
