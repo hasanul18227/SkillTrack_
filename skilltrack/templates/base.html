@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}SkillTrack{% endblock %}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; background: #f4f6f9; color: #222; }
+    header { background: #1f4e79; color: #fff; padding: 12px 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    header a { color: #fff; text-decoration: none; }
+    header .brand { font-weight: bold; font-size: 1.2em; }
+    header form { margin: 0; }
+    header .right { margin-left: auto; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+    header .role { background: rgba(255,255,255,.2); border-radius: 10px; padding: 2px 10px; font-size: .85em; }
+    main { max-width: 1000px; margin: 24px auto; padding: 0 16px; }
+    .card { background: #fff; border-radius: 8px; padding: 16px 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    .narrow { max-width: 440px; margin: 30px auto; }
+    .hero { padding: 28px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 16px; }
+    .grid > .card { margin-bottom: 0; }
+    .big { font-size: 2em; font-weight: bold; }
+    .big.small { font-size: 1.4em; }
+    .bar { background: #e3e8ef; border-radius: 6px; height: 10px; overflow: hidden; margin: 6px 0; }
+    .bar > span { display: block; height: 100%; background: #2e8b57; }
+    .btn { display: inline-block; background: #1f4e79; color: #fff; border: 0; padding: 7px 14px; border-radius: 6px; cursor: pointer; text-decoration: none; font: inherit; font-size: .95em; margin-right: 6px; }
+    .btn.light { background: #e3e8ef; color: #222; }
+    .btn.danger { background: #b03a2e; }
+    .badge { display: inline-block; background: #ffd966; border-radius: 12px; padding: 3px 10px; margin: 2px; font-size: .9em; }
+    .tag-overdue { background: #b03a2e; color: #fff; border-radius: 10px; padding: 2px 8px; font-size: .8em; }
+    .msg { padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; }
+    .msg.success { background: #e6f4ea; }
+    .msg.error { background: #fde8e8; }
+    .msg.warning { background: #fff4d6; }
+    .msg.info { background: #e8f0fb; }
+    .note { padding: 10px 6px; border-bottom: 1px solid #eee; }
+    .note.unread { background: #f0f7ff; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 8px; border-bottom: 1px solid #eee; vertical-align: top; }
+    input, select, textarea { padding: 8px; margin: 4px 0 10px; border: 1px solid #ccc; border-radius: 6px; font: inherit; width: 100%; box-sizing: border-box; }
+    .inline-form { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin: 6px 0; }
+    .inline-form label { display: flex; flex-direction: column; font-size: .9em; }
+    .inline-form input { width: 140px; margin: 2px 0 0; }
+    .muted { color: #777; font-size: .9em; }
+    .stars { color: #d69e00; }
+    ul.errorlist { color: #b03a2e; padding-left: 0; list-style: none; margin: 0 0 6px; }
+  </style>
+</head>
+<body>
+<header>
+  <a class="brand" href="{% url 'home' %}">SkillTrack</a>
+  {% if user.is_authenticated %}
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+    <a href="{% url 'module_list' %}">Available modules</a>
+    <a href="{% url 'my_courses' %}">My courses</a>
+    <a href="{% url 'notifications' %}">Notifications{% if unread_count %} ({{ unread_count }}){% endif %}</a>
+    {% if can_manage_team %}
+      <a href="{% url 'team' %}">Team</a>
+      <a href="{% url 'assign_module' %}">Assign</a>
+    {% endif %}
+    {% if is_hr %}<a href="{% url 'manage_modules' %}">Manage modules</a>{% endif %}
+    <div class="right">
+      {% if user.profile %}<span class="role">{{ user.profile.get_role_display }}</span>{% endif %}
+      <a href="{% url 'profile' %}">{{ user.username }}</a>
+      <a href="{% url 'password_change' %}">Change password</a>
+      <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button class="btn light" type="submit">Log out</button>
+      </form>
+    </div>
+  {% else %}
+    <div class="right">
+      <a href="{% url 'login' %}">Log in</a>
+      <a href="{% url 'register' %}">Register</a>
+    </div>
+  {% endif %}
+</header>
+<main>
+  {% if messages %}
+    {% for msg in messages %}<div class="msg {{ msg.tags }}">{{ msg }}</div>{% endfor %}
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>
