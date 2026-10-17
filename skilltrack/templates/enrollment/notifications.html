@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Notifications · SkillTrack{% endblock %}
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+  <h1>Notifications</h1>
+  {% if unread_count %}
+    <form method="post" action="{% url 'mark_notifications_read' %}">
+      {% csrf_token %}
+      <button class="btn light" type="submit">Mark all as read</button>
+    </form>
+  {% endif %}
+</div>
+
+<div class="card">
+  {% for n in items %}
+    <div class="note {% if not n.is_read %}unread{% endif %}">
+      <strong>{{ n.get_kind_display }}</strong>
+      <span class="muted">{{ n.created_at|date:"d M Y, H:i" }}</span>
+      <p>{{ n.message }}</p>
+    </div>
+  {% empty %}
+    <p class="muted">No notifications yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}

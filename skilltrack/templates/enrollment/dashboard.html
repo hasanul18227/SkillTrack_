@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}My dashboard · SkillTrack{% endblock %}
+{% block content %}
+<h1>My dashboard</h1>
+<p class="muted">Welcome, {{ user.get_full_name|default:user.username }}{% if user.profile %} &middot; {{ user.profile.department }}{% endif %}</p>
+
+<div class="grid">
+  <div class="card">
+    <div class="muted">Total points</div>
+    <div class="big">{{ points }}</div>
+  </div>
+  <div class="card">
+    <div class="muted">Current stage</div>
+    <div class="big small">{{ stage }}</div>
+  </div>
+  <div class="card">
+    <div class="muted">Badges earned</div>
+    <div class="big">{{ badges|length }}</div>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h2 style="margin-top: 0;">Learning milestones</h2>
+    {% for m in milestones %}
+      <p><strong>{{ m.label }}</strong>: {{ m.done }} of {{ m.total }} completed{% if m.complete %} (done){% endif %}</p>
+      <div class="bar"><span style="width: {{ m.percent }}%"></span></div>
+    {% empty %}
+      <p class="muted">No modules in the catalog yet.</p>
+    {% endfor %}
+  </div>
+  <div class="card">
+    <h2 style="margin-top: 0;">Upcoming tasks</h2>
+    {% for e in upcoming %}
+      <p>
+        <strong>{{ e.module.title }}</strong> &middot; due {{ e.due_date|date:"d M Y" }}
+        {% if e.is_overdue %}<span class="tag-overdue">Overdue</span>{% endif %}
+      </p>
+    {% empty %}
+      <p class="muted">No deadlines right now.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="card">
+  <h2 style="margin-top: 0;">Badges</h2>
+  {% for badge in badges %}
+    <span class="badge" title="{{ badge.description }}">{{ badge.name }}</span>
+  {% empty %}
+    <p class="muted">Complete modules to earn your first badge.</p>
+  {% endfor %}
+</div>
+
+<div class="card">
+  <h2 style="margin-top: 0;">Recommended next</h2>
+  {% if current %}
+    <p class="muted">Modules at your current stage ({{ current.label }}) that you have not started.</p>
+    <div class="grid">
+      {% for module in recommended %}
+        <div class="card">
+          <strong>{{ module.title }}</strong>
+          <div class="muted">{{ module.category }} &middot; {{ module.points }} points</div>
+          <a class="btn light" style="margin-top: 8px;" href="{% url 'module_detail' module.pk %}">View</a>
+        </div>
+      {% empty %}
+        <p class="muted">You have started every module at this stage.</p>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">{{ stage }}.</p>
+  {% endif %}
+</div>
+
+<p>
+  <a class="btn" href="{% url 'my_courses' %}">My enrolled courses</a>
+  <a class="btn light" href="{% url 'module_list' %}">Available modules</a>
+</p>
+{% endblock %}

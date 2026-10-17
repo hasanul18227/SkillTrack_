@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Access denied · SkillTrack{% endblock %}
+{% block content %}
+<div class="card narrow">
+  <h2>Access denied</h2>
+  <p>Your role does not have permission to open this page. Pages for other roles are not available to you.</p>
+  <a class="btn" href="{% url 'dashboard' %}">Go to my dashboard</a>
+</div>
+{% endblock %}
